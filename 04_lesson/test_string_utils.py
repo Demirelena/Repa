@@ -1,50 +1,136 @@
 import pytest
-from string_utils import StringUtils 
+from string_utils import StringUtils
 
-
-utils = StringUtils()
+string_utils = StringUtils()
 
 # --- Тесты для capitalize ---
 
-# Позитивные кейсы
-assert utils.capitalize("skypro") == "Skypro", "Should capitalize first letter"
-assert utils.capitalize("s") == "S", "Should capitalize single character"
-assert utils.capitalize(" skypro") == " skypro", "Should not change leading space"
+@pytest.mark.positive
+@pytest.mark.parametrize("input_str, expected", [
+    ("skypro", "Skypro"),
+    ("s", "S"),
+    (" skypro", " skypro"),
+])
+def test_capitalize_positive(input_str, expected):
+    assert string_utils.capitalize(input_str) == expected
 
-# Негативные кейсы
-assert utils.capitalize("") == "", "Empty string should stay empty"
-assert utils.capitalize("123abc") == "123abc", "Should not change digits"
+@pytest.mark.negative
+@pytest.mark.parametrize("input_str, expected", [
+    ("123abc", "123abc"),
+    ("", ""),
+])
+def test_capitalize_negative(input_str, expected):
+    assert string_utils.capitalize(input_str) == expected
 
 # --- Тесты для trim ---
 
-# Позитивные кейсы
-assert utils.trim("   skypro") == "skypro", "Should trim leading spaces"
-assert utils.trim("skypro") == "skypro", "No leading spaces should return same string"
-assert utils.trim(" ") == "", "Only space should become empty"
+@pytest.mark.positive
+@pytest.mark.parametrize("input_str, expected", [
+    ("   skypro", "skypro"),
+    ("skypro", "skypro"),
+    (" ", ""),
+])
+def test_trim_positive(input_str, expected):
+    assert string_utils.trim(input_str) == expected
 
-# Негативные кейсы
-assert utils.trim("") == "", "Empty string should stay empty"
-assert utils.trim("   ") == "", "String with only spaces should become empty"
+@pytest.mark.negative
+@pytest.mark.parametrize("input_str, expected", [
+    ("", ""),
+    ("   ", ""),
+])
+def test_trim_negative(input_str, expected):
+    assert string_utils.trim(input_str) == expected
 
 # --- Тесты для contains ---
 
-# Позитивные кейсы
-assert utils.contains("SkyPro", "S") == True, "Should find S"
-assert utils.contains("SkyPro", "P") == True, "Should find P"
-assert utils.contains("SkyPro", "y") == True, "Should find y"
+@pytest.mark.positive
+@pytest.mark.parametrize("string, symbol", [
+    ("SkyPro", "S"),
+    ("SkyPro", "P"),
+    ("SkyPro", "y"),
+])
+def test_contains_positive(string, symbol):
+    assert string_utils.contains(string, symbol)
 
-# Негативные кейсы
-assert utils.contains("SkyPro", "U") == False, "Should not find U"
-assert utils.contains("", "a") == False, "Empty string should not contain anything"
-assert utils.contains("SkyPro", "") == True, "Empty string is technically in any string"
+@pytest.mark.negative
+@pytest.mark.parametrize("string, symbol", [
+    ("SkyPro", "U"),
+    ("", "a"),
+])
+def test_contains_negative(string, symbol):
+    assert not string_utils.contains(string, symbol)
+
+@pytest.mark.positive
+def test_contains_empty_symbol():
+    assert string_utils.contains("SkyPro", "")
 
 # --- Тесты для delete_symbol ---
 
-# Позитивные кейсы
-assert utils.delete_symbol("SkyPro", "k") == "SyPro", "Should remove k"
-assert utils.delete_symbol("SkyPro", "Pro") == "Sky", "Should remove Pro"
-assert utils.delete_symbol("SkyPro", "") == "SkyPro", "Deleting empty symbol changes nothing"
+@pytest.mark.positive
+@pytest.mark.parametrize("string, symbol, expected", [
+    ("SkyPro", "k", "SyPro"),
+    ("SkyPro", "Pro", "Sky"),
+    ("SkyPro", "", "SkyPro"),
+])
+def test_delete_symbol_positive(string, symbol, expected):
+    assert string_utils.delete_symbol(string, symbol) == expected
 
-# Негативные кейсы
-assert utils.delete_symbol("SkyPro", "U") == "SkyPro", "Deleting non-existent symbol changes nothing"
-assert utils.delete_symbol("", "S") == "", "Deleting from empty string stays empty"
+@pytest.mark.negative
+@pytest.mark.parametrize("string, symbol, expected", [
+    ("SkyPro", "U", "SkyPro"),
+    ("", "S", ""),
+])
+def test_delete_symbol_negative(string, symbol, expected):
+    assert string_utils.delete_symbol(string, symbol) == expected
+
+@pytest.mark.positive
+@pytest.mark.parametrize("input_str, expected", [
+    ("04 апреля 2023", "04 апреля 2023"),
+])
+def test_capitalize_with_date_like_string(input_str, expected):
+    assert string_utils.capitalize(input_str) == expected
+
+@pytest.mark.negative
+@pytest.mark.parametrize("input_str", [
+    None
+])
+def test_capitalize_none(input_str):
+    with pytest.raises(AttributeError):
+        string_utils.capitalize(input_str)
+
+# --- trim ---
+
+@pytest.mark.positive
+@pytest.mark.parametrize("input_str, expected", [
+    ("04 апреля 2023", "04 апреля 2023"),
+])
+def test_trim_with_date_like_string(input_str, expected):
+    assert string_utils.trim(input_str) == expected
+
+@pytest.mark.negative
+@pytest.mark.parametrize("input_str", [
+    None
+])
+def test_trim_none(input_str):
+    with pytest.raises(AttributeError):
+        string_utils.trim(input_str)
+
+# --- contains ---
+
+@pytest.mark.negative
+@pytest.mark.parametrize("string, symbol", [
+    (None, "a"),
+])
+def test_contains_none(string, symbol):
+    with pytest.raises(AttributeError):
+        string_utils.contains(string, symbol)
+
+# --- delete_symbol ---
+
+@pytest.mark.negative
+@pytest.mark.parametrize("string, symbol", [
+    (None, "a"),
+])
+def test_delete_symbol_none(string, symbol):
+    with pytest.raises(AttributeError):
+        string_utils.delete_symbol(string, symbol)
